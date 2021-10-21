@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Po;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PoController extends Controller
 {
@@ -31,6 +32,22 @@ class PoController extends Controller
     public function store(Request $request)
     {
         //
+        $validator = Validator::make($request->all(), [
+            'code' => 'required|unique:pos',
+            'supplier_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response($validator->errors());
+        } else {
+
+            // $po = new Po();
+            // $po->code = $request->code;
+            // $po->supplier_id = $request->supplier_id;
+            // $po->status = 'Wait';
+            // $po->save();
+
+            return response($request->all());
+        }
     }
 
     /**
