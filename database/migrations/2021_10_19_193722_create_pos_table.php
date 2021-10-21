@@ -17,6 +17,7 @@ class CreatePosTable extends Migration
             $table->string('code', 20)->primary();
             $table->unsignedBigInteger('supplier_id');
             $table->enum('status', ['Wait', 'WaitPay', 'Complete']);
+            $table->float('total_price');
 
             $table->foreign('supplier_id')->references('id')->on('suppliers');
         });
