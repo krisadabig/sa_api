@@ -27,7 +27,7 @@ class SaleOrderSeeder extends Seeder
 
         $soLine = new SaleOrderLine();
         $soLine->id = 1;
-        $soLine->sale_order_code = $so->code;
+        $soLine->sale_order_code = "S1";
         $soLine->color_code = $items[3]->code;
         $soLine->quantity = 30;
         $soLine->save();
@@ -41,7 +41,7 @@ class SaleOrderSeeder extends Seeder
 
         $soLine = new SaleOrderLine();
         $soLine->id = 2;
-        $soLine->sale_order_code = $so->code;
+        $soLine->sale_order_code = "S2";
         $soLine->color_code = $items[4]->code;
         $soLine->quantity = 10;
         $soLine->save();
