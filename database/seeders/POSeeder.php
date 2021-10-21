@@ -27,7 +27,7 @@ class POSeeder extends Seeder
 
         $poLine = new PoLine();
         $poLine->id = 1;
-        $poLine->po_code = $po->code;
+        $poLine->po_code = "P1";
         $poLine->color_code = $items[0]->code;
         $poLine->quantity = 20;
         $poLine->price_per_unit = 950;
@@ -42,7 +42,7 @@ class POSeeder extends Seeder
 
         $poLine = new PoLine();
         $poLine->id = 2;
-        $poLine->po_code = $po->code;
+        $poLine->po_code = "P2";
         $poLine->color_code = $items[1]->code;
         $poLine->quantity = 35;
         $poLine->price_per_unit = 800;
@@ -57,7 +57,7 @@ class POSeeder extends Seeder
 
         $poLine = new PoLine();
         $poLine->id = 3;
-        $poLine->po_code = $po->code;
+        $poLine->po_code = "P3";
         $poLine->color_code = $items[2]->code;
         $poLine->quantity = 100;
         $poLine->price_per_unit = 600;
