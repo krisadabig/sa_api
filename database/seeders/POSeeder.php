@@ -20,6 +20,7 @@ class POSeeder extends Seeder
 
         $po = new Po();
         $po->code = "P1";
+        $po->supplier_id = 1;
         $po->status = "Wait";
         $po->total_price = 19000;
         $po->save();
@@ -34,6 +35,7 @@ class POSeeder extends Seeder
 
         $po = new Po();
         $po->code = "P2";
+        $po->supplier_id = 2;
         $po->status = "WaitPay";
         $po->total_price = 28000;
         $po->save();
@@ -48,6 +50,7 @@ class POSeeder extends Seeder
 
         $po = new Po();
         $po->code = "P3";
+        $po->supplier_id = 1;
         $po->status = "Complete";
         $po->total_price = 60000;
         $po->save();
