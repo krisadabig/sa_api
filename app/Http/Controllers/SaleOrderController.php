@@ -42,8 +42,8 @@ class SaleOrderController extends Controller
      */
     public function show($sale_order_code)
     {
-        $sOrder = SaleOrder::where('sale_order_code', $sale_order_code)->first();
-        return $sOrder;
+        $sOrder = SaleOrder::where('code', $sale_order_code)->first();
+        return response($sOrder);
     }
 
     /**

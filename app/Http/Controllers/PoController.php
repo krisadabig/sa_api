@@ -19,7 +19,7 @@ class PoController extends Controller
         // $po->map(function ($po) {
         //     return collect($po->poLines->item)->all();
         // });
-        return ($po);
+        return response($po);
     }
 
     /**
