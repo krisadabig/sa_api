@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SupplierController extends Controller
 {
@@ -27,6 +28,23 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'phone_no' => 'required|regex:/[0-9]{9,}/'
+        ], [
+            'name.required' => 'name is required',
+            'phone_no.required' => 'phone number is required',
+            'phone_no.regex' => 'รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง'
+        ]);
+        if ($validator->fails()) {
+            return response($validator->errors());
+        } else {
+            $supplier = new Supplier();
+            $supplier->name = $request->name;
+            $supplier->phone_no = $request->phone_no;
+            $supplier->save();
+            return response($supplier);
+        }
     }
 
     /**
@@ -35,9 +53,11 @@ class SupplierController extends Controller
      * @param  \App\Models\Supplier  $supplier
      * @return \Illuminate\Http\Response
      */
-    public function show(Supplier $supplier)
+    public function show($id)
     {
         //
+        $supplier = Supplier::findOrFail($id);
+        return response($supplier);
     }
 
     /**
@@ -47,9 +67,14 @@ class SupplierController extends Controller
      * @param  \App\Models\Supplier  $supplier
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Supplier $supplier)
+    public function update(Request $request, $id)
     {
-        //
+        $supplier = Supplier::findOrFail($id);
+        foreach ($request->all() as $key => $value) {
+            $supplier->$key = $value;
+        }
+        $supplier->save();
+        return response($supplier);
     }
 
     /**
