@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\SaleOrder;
 use Illuminate\Database\Seeder;
 
 class SaleOrderSeeder extends Seeder
@@ -13,6 +14,7 @@ class SaleOrderSeeder extends Seeder
      */
     public function run()
     {
+        SaleOrder::factory()->count(500)->create();
         //
     }
 }

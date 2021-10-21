@@ -17,8 +17,8 @@ class Item extends Model
     {
         return $this->hasMany(SaleOrderLine::class);
     }
-    public function purchaseOrderLines()
+    public function poLines()
     {
-        return $this->hasMany(PoLine::class);
+        return $this->hasMany(PoLine::class, 'color_code');
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\PO;
+use App\Models\Po;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class POFactory extends Factory
@@ -12,7 +12,7 @@ class POFactory extends Factory
      *
      * @var string
      */
-    protected $model = PO::class;
+    protected $model = Po::class;
 
     /**
      * Define the model's default state.
@@ -21,8 +21,6 @@ class POFactory extends Factory
      */
     public function definition()
     {
-        return [
-            //
-        ];
+        return [];
     }
 }

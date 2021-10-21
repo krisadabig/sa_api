@@ -23,6 +23,11 @@ class SaleOrderFactory extends Factory
     {
         return [
             //
+            'code' => $this->faker->unique()->numerify('########'),
+            'customer_id' => 1,
+            'status' => 'WaitCreateBill',
+            'total_price' => $this->faker->numberBetween(1000, 200000),
+
         ];
     }
 }
