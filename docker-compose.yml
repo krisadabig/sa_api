@@ -1,31 +1,13 @@
 version: "3"
 
 services:
-    app:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        image: digitalocean.com/php
-        #   user: 1001:1002
-        container_name: app
-        restart: unless-stopped
-        tty: true
-        environment:
-            SERVICE_NAME: app
-            SERVICE_TAGS: dev
-        working_dir: /var/www
-        volumes:
-            - ./:/var/www
-            - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
-        networks:
-            - api-network
     php:
         container_name: php
         build:
             context: .
             dockerfile: Dockerfile
         volumes:
-            - ./web:/web
+            - ./:/var/www
         networks:
             - api-network
 
@@ -38,7 +20,7 @@ services:
             - 8000:80
         volumes:
             - ./conf/nginx.conf:/etc/nginx/conf.d/
-            - ./web:/web
+            - ./:/var/www
         networks:
             - api-network
     mysql:
@@ -52,8 +34,6 @@ services:
         environment:
             MYSQL_DATABASE: sa
             MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-            MYSQL_USER: big
-            MYSQL_PASSWORD: password
             SERVICE_TAGS: dev
             SERVICE_NAME: mysql
         volumes:
@@ -63,6 +43,7 @@ services:
 
 networks:
     api-network:
+        driver: bridge 
 
 volumes:
     mysql:
