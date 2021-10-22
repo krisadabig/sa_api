@@ -19,19 +19,6 @@ services:
         networks:
             - api-network
 
-    api-server:
-        image: nginx:alpine
-        container_name: backend-api-server
-        restart: unless-stopped
-        tty: true
-        ports:
-            - 8000:80
-        volumes:
-            - ./backend-api:/var/www
-            - ./backend-api/nginx/conf.d:/etc/nginx/conf.d/
-        networks:
-            - api-network
-
     api-db:
         image: mysql:5.7.22
         container_name: backend-api-db
