@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\POController;
 use App\Http\Controllers\PoController as ControllersPoController;
@@ -27,6 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('items/findwait', [ItemController::class, 'findItemWait']);
 Route::apiResource('items', \App\Http\Controllers\Api\ItemController::class);
 Route::apiResource('customers', CustomerController::class);
 Route::post('sale_order/towaitpay/{sale_order_code}', [SaleOrderController::class, 'updateStatusToWaitPay']);

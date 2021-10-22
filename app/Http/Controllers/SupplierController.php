@@ -29,8 +29,8 @@ class SupplierController extends Controller
     {
         //
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'phone_no' => 'required|regex:/[0-9]{9,}/'
+            'name' => 'unique:suppliers',
+            'phone_no' => 'regex:/[0-9]{9,}/'
         ], [
             'name.required' => 'name is required',
             'phone_no.required' => 'phone number is required',

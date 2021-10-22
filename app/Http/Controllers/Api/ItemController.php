@@ -15,7 +15,12 @@ class ItemController extends Controller
      */
     public function index()
     {
-        //
+        $item = Item::all();
+        return response($item);
+    }
+
+    public function findItemWait()
+    {
         $item = Item::whereHas('poLines.po', function ($q) {
             $q->where('status', 'Wait');
         })->with('poLines.po', 'poLines')->get();
