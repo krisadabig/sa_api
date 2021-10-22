@@ -1,47 +1,51 @@
 version: "3"
 
 services:
-    api:
+    php:
+        container_name: php
         build:
-            context: ./sa_api
+            context: .
             dockerfile: Dockerfile
-        image: backend-api
-        container_name: backend-api
-        restart: unless-stopped
-        tty: true
-        environment:
-            SERVICE_NAME: api
-            SERVICE_TAGS: dev
-        working_dir: /var/www
         volumes:
-            - ./backend-api:/var/www
-            - ./backend-api/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+            - ./web:/web
         networks:
             - api-network
 
-    api-db:
+    api-server:
+        image: nginx:alpine
+        container_name: nginx
+        restart: unless-stopped
+        tty: true
+        ports:
+            - 8000:80
+        volumes:
+            - ./conf/nginx.conf:/etc/nginx/conf.d/
+            - ./web:/web
+        networks:
+            - api-network
+    mysql:
         image: mysql:5.7.22
-        container_name: backend-api-db
+        container_name: mysql
         restart: unless-stopped
         tty: true
         command: --disable-partition-engine-check
         ports:
             - 3306:3306
         environment:
-            MYSQL_DATABASE: tetris_db
+            MYSQL_DATABASE: sa
             MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            MYSQL_USER: big
+            MYSQL_PASSWORD: password
             SERVICE_TAGS: dev
             SERVICE_NAME: mysql
         volumes:
-            - dbdata:/var/lib/mysql
-            - ./backend-api/mysql/my.cnf:/etc/mysql/my.cnf
+            - mysql:/var/lib/mysql
         networks:
             - api-network
 
 networks:
     api-network:
-        driver: bridge
 
 volumes:
-    dbdata:
+    mysql:
         driver: local
