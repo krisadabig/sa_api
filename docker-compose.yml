@@ -6,6 +6,9 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+        environment:
+            SERVICE_NAME: php 
+            SERVICE_TAGS: dev
         volumes:
             - ./:/var/www
         networks:
@@ -19,8 +22,8 @@ services:
         ports:
             - 8000:80
         volumes:
-            - ./conf/nginx.conf:/etc/nginx/conf.d/
             - ./:/var/www
+            - ./nginx/conf.d/:/etc/nginx/conf.d
         networks:
             - api-network
     mysql:
