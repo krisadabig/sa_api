@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+    php:
+        container_name: php
+        build:
+            context: .
+            dockerfile: Dockerfile
+        environment:
+            SERVICE_NAME: php 
+            SERVICE_TAGS: dev
+        volumes:
+            - ./:/var/www
+        networks:
+            - api-network
+
+    api-server:
+        image: nginx:alpine
+        container_name: nginx
+        restart: unless-stopped
+        tty: true
+        ports:
+            - 8000:80
+        volumes:
+            - ./:/var/www
+            - ./nginx/conf.d/:/etc/nginx/conf.d
+        networks:
+            - api-network
+    mysql:
+        image: mysql:5.7.22
+        container_name: mysql
+        restart: unless-stopped
+        tty: true
+        command: --disable-partition-engine-check
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_DATABASE: sa
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - mysql:/var/lib/mysql
+        networks:
+            - api-network
+
+networks:
+    api-network:
+        driver: bridge 
+
+volumes:
+    mysql:
+        driver: local
