@@ -16,8 +16,8 @@ class CreateItemsTable extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->string('code', 20)->primary();
             $table->float('price');
-            $table->integer('amount');
-            $table->integer('min_amount');
+            $table->bigInteger('amount');
+            $table->bigInteger('min_amount');
             // $table->timestamps();
         });
     }

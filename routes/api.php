@@ -35,6 +35,6 @@ Route::post('sale_order/towaitpay/{sale_order_code}', [SaleOrderController::clas
 Route::post('sale_order/tocomplete/{sale_order_code}', [SaleOrderController::class, 'complete']);
 Route::apiResource('sale_order', SaleOrderController::class);
 Route::apiResource('sale_order_lines', SaleOrderLineController::class);
-Route::apiResource('po', POController::class);
+Route::apiResource('po', PoController::class);
 Route::apiResource('poline', PoLineController::class);
 Route::apiResource('supplier', SupplierController::class);
