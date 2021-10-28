@@ -27,7 +27,6 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $customer = new Customer();
-        $customer->customer_id = $request->customer_id;
         $customer->name = $request->name;
         $customer->address = $request->address;
         $customer->phone_no = $request->phone_no;
@@ -54,9 +53,9 @@ class CustomerController extends Controller
      * @param  \App\Models\Customer  $customer
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $customer_id)
+    public function update(Request $request, $id)
     {
-        $customer = Customer::where('customer_id', $customer_id)->first();
+        $customer = Customer::where('id', $id)->first();
         foreach ($request->all() as $key => $value) {
             $customer->$key = $value;
         }

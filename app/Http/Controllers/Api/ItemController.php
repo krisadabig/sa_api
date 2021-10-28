@@ -68,19 +68,24 @@ class ItemController extends Controller
      */
     public function update(Request $request, $code)
     {
-        $item = Item::findOrFail($code);
+        $item = Item::where('code', $code)->first();
+        return response()->json([
+            'data' => $request->all(),
+            'code' => $code
+        ]);
         foreach ($request->all() as $key => $value) {
             $item->$key = $value;
         }
         $item->save();
         return response()->json([
+            'status' => 'success',
             'data' => $item
         ]);
     }
 
     public function updateStock($code, $amount)
     {
-        $item = Item::findOrFail($code)->with('poLines');
+        $item = Item::where('code', $code)->first();
         $item->poLines->amount -= $amount;
         $item->save();
         return response()->json([
