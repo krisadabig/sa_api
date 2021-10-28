@@ -2,8 +2,7 @@
 
 use App\Http\Controllers\Api\ItemController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\POController;
-use App\Http\Controllers\PoController as ControllersPoController;
+use App\Http\Controllers\PoController;
 use App\Http\Controllers\PoLineController;
 use App\Http\Controllers\SaleOrderController;
 use App\Http\Controllers\SaleOrderLineController;
@@ -31,10 +30,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('items/findwait', [ItemController::class, 'findItemWait']);
 Route::apiResource('items', \App\Http\Controllers\Api\ItemController::class);
 Route::apiResource('customers', CustomerController::class);
-Route::post('sale_order/towaitpay/{sale_order_code}', [SaleOrderController::class, 'updateStatusToWaitPay']);
-Route::post('sale_order/tocomplete/{sale_order_code}', [SaleOrderController::class, 'complete']);
+Route::post('sale_order/towaitpay/{code}', [SaleOrderController::class, 'updateStatusToWaitPay']);
+Route::post('sale_order/tocomplete/{code}', [SaleOrderController::class, 'complete']);
 Route::apiResource('sale_order', SaleOrderController::class);
 Route::apiResource('sale_order_lines', SaleOrderLineController::class);
+Route::post('po/to_wait_pay/{code}', [PoController::class, 'toWaitPay']);
+Route::post('po/to_complete/{code}', [PoController::class, 'toComplete']);
 Route::apiResource('po', PoController::class);
 Route::apiResource('poline', PoLineController::class);
 Route::apiResource('supplier', SupplierController::class);

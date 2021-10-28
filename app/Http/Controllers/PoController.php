@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Item;
 use App\Models\Po;
+use App\Models\PoLine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,14 +41,26 @@ class PoController extends Controller
         if ($validator->fails()) {
             return response($validator->errors());
         } else {
+            $po = new Po();
+            $po->code = $request->code;
+            $po->supplier_id = $request->supplier_id;
+            $po->status = $request->status;
+            $po->total_price = $request->total_price;
+            $po->save();
 
-            // $po = new Po();
-            // $po->code = $request->code;
-            // $po->supplier_id = $request->supplier_id;
-            // $po->status = 'Wait';
-            // $po->save();
-
-            return response($request->all());
+            foreach ($request->po_lines as $value) {
+                # code...
+                $poLine = new PoLine();
+                $poLine->po_code = $value["po_code"];
+                $poLine->color_code = $value["color_code"];
+                $poLine->quantity = $value["quantity"];
+                $poLine->price_per_unit = $value["price_per_unit"];
+                $poLine->save();
+            }
+            return response()->json([
+                "status" => "success",
+                "data" =>  $po
+            ]);
         }
     }
 
@@ -58,7 +72,9 @@ class PoController extends Controller
      */
     public function show(Po $po)
     {
-        //
+        // 
+        $po = Po::where('code', $po->code)->with('poLines', 'poLines.item', 'supplier')->first();
+        return response($po);
     }
 
     /**
@@ -71,6 +87,33 @@ class PoController extends Controller
     public function update(Request $request, Po $po)
     {
         //
+    }
+
+    public function toWaitPay($code)
+    {
+        $po = Po::where('code', $code)->with('poLines')->first();
+        $po->status = "WaitPay";
+        $po->save();
+
+        foreach ($po->poLines as $value) {
+            # code...
+            $item = Item::where('code', $value->color_code)->first();
+            $item->amount += $value->quantity;
+            $item->save();
+        }
+        return response()->json([
+            'status' => 'success'
+        ]);
+    }
+
+    public function toComplete($code)
+    {
+        $po = Po::where('code', $code)->first();
+        $po->status = "Complete";
+        $po->save();
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 
     /**

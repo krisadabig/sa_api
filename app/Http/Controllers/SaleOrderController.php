@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Api\ItemController;
 use App\Models\SaleOrder;
+use App\Models\SaleOrderLine;
 use Illuminate\Http\Request;
+use stdClass;
+
+use function PHPSTORM_META\map;
 
 class SaleOrderController extends Controller
 {
@@ -27,11 +32,28 @@ class SaleOrderController extends Controller
     public function store(Request $request)
     {
         $sOrder = new SaleOrder();
-        $sOrder->sale_order_code = $request->sale_order_code;
+        $sOrder->code = $request->code;
+        $sOrder->customer_id = $request->customer_id;
         $sOrder->status = $request->status;
+        $sOrder->paymentMethod = $request->paymentMethod;
         $sOrder->total_price = $request->total_price;
         $sOrder->save();
-        return response($sOrder);
+
+        foreach ($request->sale_order_lines as $value) {
+            # code...
+            $sOrderLines = new SaleOrderLine();
+            $sOrderLines->sale_order_code =  $value['sale_order_code'];
+            $sOrderLines->color_code = $value['color_code'];
+            $sOrderLines->quantity = $value['quantity'];
+            $item = new ItemController();
+            $item->updateStock($value['color_code'], $value['quantity']);
+            $sOrderLines->save();
+        }
+        $resSaleOrder = SaleOrder::where('code', $request->code)->with('saleOrderLines')->first();
+        return response()->json([
+            "status" => "success",
+            "data" => $resSaleOrder,
+        ]);
     }
 
     /**
@@ -40,9 +62,9 @@ class SaleOrderController extends Controller
      * @param  \App\Models\SaleOrder  $saleOrder
      * @return \Illuminate\Http\Response
      */
-    public function show($sale_order_code)
+    public function show($code)
     {
-        $sOrder = SaleOrder::where('code', $sale_order_code)->first();
+        $sOrder = SaleOrder::where('code', $code)->with('saleOrderLines', 'saleOrderLines.item', 'customer')->first();
         return response($sOrder);
     }
 
@@ -53,25 +75,25 @@ class SaleOrderController extends Controller
      * @param  \App\Models\SaleOrder  $saleOrder
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $sale_order_code)
+    public function update(Request $request, $code)
     {
-        $sOrder = SaleOrder::where('sale_order_code', $sale_order_code)->first();
+        $sOrder = SaleOrder::where('code', $code)->first();
         foreach ($request->all() as $key => $value) {
             $sOrder->$key = $value;
         }
         $sOrder->save();
         return response($sOrder);
     }
-    public function updateStatusToWaitPay($sale_order_code)
+    public function updateStatusToWaitPay($code)
     {
-        $sOrder = SaleOrder::where('sale_order_code', $sale_order_code)->first();
+        $sOrder = SaleOrder::where('code', $code)->first();
         $sOrder->status = 'WaitPay';
         $sOrder->save();
         return response($sOrder);
     }
-    public function complete($sale_order_code)
+    public function complete($code)
     {
-        $sOrder = SaleOrder::where('code', $sale_order_code)->first();
+        $sOrder = SaleOrder::where('code', $code)->first();
         $sOrder->status = 'Complete';
         $sOrder->save();
         $sOrder->complete_date = $sOrder->updated_at;

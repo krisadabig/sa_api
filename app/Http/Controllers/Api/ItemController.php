@@ -15,7 +15,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $item = Item::all();
+        $item = Item::orderBy('code')->get();
         return response($item);
     }
 
@@ -66,14 +66,25 @@ class ItemController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $color_code)
+    public function update(Request $request, $code)
     {
-        $item = Item::findOrFail($color_code);
+        $item = Item::findOrFail($code);
         foreach ($request->all() as $key => $value) {
             $item->$key = $value;
         }
         $item->save();
         return response()->json([
+            'data' => $item
+        ]);
+    }
+
+    public function updateStock($code, $amount)
+    {
+        $item = Item::findOrFail($code)->with('poLines');
+        $item->poLines->amount -= $amount;
+        $item->save();
+        return response()->json([
+            'status' => 'success',
             'data' => $item
         ]);
     }
