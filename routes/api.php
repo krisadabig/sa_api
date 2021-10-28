@@ -31,7 +31,7 @@ Route::get('items/findwait', [ItemController::class, 'findItemWait']);
 Route::apiResource('items', \App\Http\Controllers\Api\ItemController::class);
 Route::apiResource('customers', CustomerController::class);
 Route::post('sale_order/towaitpay/{code}', [SaleOrderController::class, 'updateStatusToWaitPay']);
-Route::post('sale_order/tocomplete/{code}', [SaleOrderController::class, 'complete']);
+Route::post('sale_order/to_complete/{code}', [SaleOrderController::class, 'complete']);
 Route::apiResource('sale_order', SaleOrderController::class);
 Route::apiResource('sale_order_lines', SaleOrderLineController::class);
 Route::post('po/to_wait_pay/{code}', [PoController::class, 'toWaitPay']);

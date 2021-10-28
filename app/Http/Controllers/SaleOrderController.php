@@ -95,7 +95,6 @@ class SaleOrderController extends Controller
     {
         $sOrder = SaleOrder::where('code', $code)->first();
         $sOrder->status = 'Complete';
-        $sOrder->save();
         $sOrder->complete_date = $sOrder->updated_at;
         $sOrder->save();
         return response($sOrder);
