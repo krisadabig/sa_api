@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Item;
+use App\Models\Po;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -21,12 +22,25 @@ class ItemController extends Controller
         return response($item);
     }
 
-    public function findItemWait()
+    public function findItemWait($code)
     {
-        $item = Item::whereHas('poLines.po', function ($q) {
-            $q->where('status', 'Wait');
-        })->with('poLines.po', 'poLines')->get();
-        return response($item);
+        // $item = Item::where('code', $code)->whereHas('poLines.po', function ($q) {
+        //     $q->where('status', 'Wait');
+        // })->with('poLines.po')->get();
+        $item = Po::where('status', 'Wait')->whereHas('poLines', function ($q) use ($code) {
+            $q->where('color_code', $code);
+        })->with('poLines')->get();
+        // $item = Po::with('poLines', 'poLines.item')->where('status', 'Wait')->get();
+        if ($item->count()) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $item
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'failed'
+            ]);
+        }
     }
 
     /**
@@ -139,6 +153,12 @@ class ItemController extends Controller
             'status' => 'success',
             'data' => "from updateStock"
         ]);
+    }
+
+    public function getOrderStatus($code)
+    {
+        $po = Po::with('poLines', 'poLines.item')->where('poLines.color_code', $code)->get();
+        return response($po);
     }
 
     /**

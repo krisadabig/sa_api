@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('items/findwait', [ItemController::class, 'findItemWait']);
+Route::get('items/findwait/{code}', [ItemController::class, 'findItemWait']);
 Route::post('item/updateStock', [ItemController::class, 'updateStock']);
 Route::apiResource('items', \App\Http\Controllers\Api\ItemController::class);
 Route::apiResource('customers', CustomerController::class);
