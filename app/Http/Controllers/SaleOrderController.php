@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Api\ItemController;
 use App\Models\SaleOrder;
 use App\Models\SaleOrderLine;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -23,6 +24,11 @@ class SaleOrderController extends Controller
         return $sOrder;
     }
 
+    public function report()
+    {
+        $sOrder = SaleOrder::where('complete_date', '>=', Carbon::now()->subdays(7))->with('saleOrderLines', 'saleOrderLines.item', 'customer')->get();
+        return response($sOrder);
+    }
     /**
      * Store a newly created resource in storage.
      *
