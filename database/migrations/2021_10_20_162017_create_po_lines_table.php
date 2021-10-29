@@ -20,8 +20,8 @@ class CreatePoLinesTable extends Migration
             $table->bigInteger('quantity');
             $table->float('price_per_unit');
 
-            $table->foreign('po_code')->references('code')->on('pos');
-            $table->foreign('color_code')->references('code')->on('items');
+            $table->foreign('po_code')->references('code')->on('pos')->cascadeOnDelete();
+            $table->foreign('color_code')->references('code')->on('items')->cascadeOnUpdate();
         });
     }
 

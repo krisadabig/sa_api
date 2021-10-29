@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\ItemController;
 use App\Models\SaleOrder;
 use App\Models\SaleOrderLine;
 use Illuminate\Http\Request;
-use stdClass;
+use Illuminate\Support\Facades\Validator;
 
 use function PHPSTORM_META\map;
 
@@ -31,29 +31,50 @@ class SaleOrderController extends Controller
      */
     public function store(Request $request)
     {
-        $sOrder = new SaleOrder();
-        $sOrder->code = $request->code;
-        $sOrder->customer_id = $request->customer_id;
-        $sOrder->status = $request->status;
-        $sOrder->paymentMethod = $request->paymentMethod;
-        $sOrder->total_price = $request->total_price;
-        $sOrder->save();
-
-        foreach ($request->sale_order_lines as $value) {
-            # code...
-            $sOrderLines = new SaleOrderLine();
-            $sOrderLines->sale_order_code =  $value['sale_order_code'];
-            $sOrderLines->color_code = $value['color_code'];
-            $sOrderLines->quantity = $value['quantity'];
-            $item = new ItemController();
-            $item->updateStock($value['color_code'], $value['quantity']);
-            $sOrderLines->save();
-        }
-        $resSaleOrder = SaleOrder::where('code', $request->code)->with('saleOrderLines')->first();
-        return response()->json([
-            "status" => "success",
-            "data" => $resSaleOrder,
+        $validator = Validator::make($request->all(), [
+            'code' => 'unique:sale_orders',
+        ], [
+            'unique' => 'เลขกำกับใบสั่งขายซ้ำ'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'failed',
+                'error' => $validator->errors()->first()
+            ]);
+        } else {
+            $sOrder = new SaleOrder();
+            $sOrder->code = $request->code;
+            $sOrder->customer_id = $request->customer_id;
+            $sOrder->status = $request->status;
+            $sOrder->paymentMethod = $request->paymentMethod;
+            $sOrder->total_price = $request->total_price;
+            $sOrder->save();
+
+            foreach ($request->sale_order_lines as $value) {
+                # code...
+                $sOrderLines = new SaleOrderLine();
+                $sOrderLines->sale_order_code =  $value['sale_order_code'];
+                $sOrderLines->color_code = $value['color_code'];
+                $sOrderLines->quantity = $value['quantity'];
+                $item = new ItemController();
+                $res = $item->updateStock($value['color_code'], $value['quantity']);
+                if ($res->getData()->status === 'failed') {
+                    $resSaleOrder = SaleOrder::where('code', $request->code)->with('saleOrderLines')->first();
+                    $resSaleOrder->delete();
+                    return response()->json([
+                        'status' => "failed",
+                        'error' => $res->getData()->error,
+                    ]);
+                }
+                $sOrderLines->save();
+            }
+            $resSaleOrder = SaleOrder::where('code', $request->code)->with('saleOrderLines')->first();
+            return response()->json([
+                "status" => "success",
+                "data" => $resSaleOrder,
+            ]);
+        }
     }
 
     /**

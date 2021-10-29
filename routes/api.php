@@ -7,8 +7,6 @@ use App\Http\Controllers\PoLineController;
 use App\Http\Controllers\SaleOrderController;
 use App\Http\Controllers\SaleOrderLineController;
 use App\Http\Controllers\SupplierController;
-use App\Models\Po;
-use App\Models\SaleOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('items/findwait', [ItemController::class, 'findItemWait']);
+Route::post('item/updateStock', [ItemController::class, 'updateStock']);
 Route::apiResource('items', \App\Http\Controllers\Api\ItemController::class);
 Route::apiResource('customers', CustomerController::class);
 Route::post('sale_order/towaitpay/{code}', [SaleOrderController::class, 'updateStatusToWaitPay']);

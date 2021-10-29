@@ -35,11 +35,15 @@ class PoController extends Controller
     {
         //
         $validator = Validator::make($request->all(), [
-            'code' => 'required|unique:pos',
-            'supplier_id' => 'required',
+            'code' => 'unique:pos',
+        ], [
+            'unique' => 'รหัสใบสั่งซื้อซ้ำ'
         ]);
         if ($validator->fails()) {
-            return response($validator->errors());
+            return response()->json([
+                'status' => 'failed',
+                'error' => $validator->errors()->first()
+            ]);
         } else {
             $po = new Po();
             $po->code = $request->code;
@@ -50,12 +54,22 @@ class PoController extends Controller
 
             foreach ($request->po_lines as $value) {
                 # code...
-                $poLine = new PoLine();
-                $poLine->po_code = $value["po_code"];
-                $poLine->color_code = $value["color_code"];
-                $poLine->quantity = $value["quantity"];
-                $poLine->price_per_unit = $value["price_per_unit"];
-                $poLine->save();
+                if ($value['quantity'] > 0 && $value['price_per_unit'] > 0) {
+
+                    $poLine = new PoLine();
+                    $poLine->po_code = $value["po_code"];
+                    $poLine->color_code = $value["color_code"];
+                    $poLine->quantity = $value["quantity"];
+                    $poLine->price_per_unit = $value["price_per_unit"];
+                    $poLine->save();
+                } else {
+                    $resPo = Po::where('code', $request->code)->with('poLines')->first();
+                    $resPo->delete();
+                    return response()->json([
+                        "status" => "failed",
+                        "error" =>  "จำนวนสินค้าที่สั่งและราคาต่อหน่วยต้องเป็น 1 ขึ้นไป",
+                    ]);
+                }
             }
             return response()->json([
                 "status" => "success",

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ItemController extends Controller
 {
@@ -36,15 +38,33 @@ class ItemController extends Controller
     public function store(Request $request)
     {
         //
-        $item = new Item();
-        $item->color_code = $request->color_code;
-        $item->price = $request->price;
-        $item->quantity = $request->quantity;
-        $item->min_quantity = $request->min_quantity;
-        $item->save();
-        return response()->json([
-            'data' => $item
+        $validator = Validator::make($request->all(), [
+            'code' => 'unique:items',
+            'price' => 'numeric|min:1',
+            'min_amount' => 'numeric|min:1'
+        ], [
+            'unique' => 'เลขกำกับใบสั่งขายซ้ำ',
+            'price.min' => 'ราคาต่อหน่วยต้องเป็น 1 ขึ้นไป',
+            'min_amount.min' => 'จำนวนคงเหลือขั้นต่ำต้องเป็น 1 ขึ้นไป'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'failed',
+                'error' => $validator->errors()->first()
+            ]);
+        } else {
+            $item = new Item();
+            $item->code = $request->code;
+            $item->price = $request->price;
+            $item->amount = $request->amount;
+            $item->min_amount = $request->min_amount;
+            $item->save();
+            return response()->json([
+                'status' => "success",
+                'data' => $item
+            ]);
+        }
     }
 
     /**
@@ -68,29 +88,56 @@ class ItemController extends Controller
      */
     public function update(Request $request, $code)
     {
-        $item = Item::where('code', $code)->first();
-        return response()->json([
-            'data' => $request->all(),
-            'code' => $code
+        $validator = Validator::make($request->all(), [
+            'code' => Rule::unique('items')->ignore($code, 'code'),
+            'price' => 'numeric|min:1',
+            'min_amount' => 'numeric|min:1'
+        ], [
+            'unique' => 'เลขกำกับใบสั่งขายซ้ำ',
+            'price.min' => 'ราคาต่อหน่วยต้องเป็น 1 ขึ้นไป',
+            'min_amount.min' => 'จำนวนคงเหลือขั้นต่ำต้องเป็น 1 ขึ้นไป'
         ]);
-        foreach ($request->all() as $key => $value) {
-            $item->$key = $value;
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'failed',
+                'error' => $validator->errors()->first()
+            ]);
+        } else {
+            $item = Item::where('code', $code)->first();
+
+            foreach ($request->all() as $key => $value) {
+                $item->$key = $value;
+            }
+            $item->save();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $item
+            ]);
         }
-        $item->save();
-        return response()->json([
-            'status' => 'success',
-            'data' => $item
-        ]);
     }
 
-    public function updateStock($code, $amount)
+    public function updateStock($code, $subAmount)
     {
         $item = Item::where('code', $code)->first();
-        $item->poLines->amount -= $amount;
+        $validator = Validator::make(["subAmount" => $subAmount], [
+            'subAmount' => 'numeric|min:1|max:' . $item->amount,
+        ], [
+            'min' => 'จำนวนที่ซื้อต้องเป็น 1 ขึ้นไป',
+            'max' => 'จำนวนที่ซื้อต้องไม่เกินจำนวนสินค้าที่มีอยู่',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'failed',
+                'error' => $validator->errors()->first()
+            ]);
+        }
+        $item->amount -= $subAmount;
         $item->save();
         return response()->json([
             'status' => 'success',
-            'data' => $item
+            'data' => "from updateStock"
         ]);
     }
 

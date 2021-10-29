@@ -20,8 +20,8 @@ class CreateSaleOrderLinesTable extends Migration
             $table->string('color_code', 20);
             $table->bigInteger('quantity');
 
-            $table->foreign('sale_order_code')->references('code')->on('sale_orders');
-            $table->foreign('color_code')->references('code')->on('items');
+            $table->foreign('sale_order_code')->references('code')->on('sale_orders')->cascadeOnDelete();
+            $table->foreign('color_code')->references('code')->on('items')->cascadeOnUpdate();
         });
     }
 
