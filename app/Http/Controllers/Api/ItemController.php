@@ -55,7 +55,7 @@ class ItemController extends Controller
         $validator = Validator::make($request->all(), [
             'code' => 'unique:items',
             'price' => 'numeric|min:1',
-            'min_amount' => 'numeric|min:1'
+            'min_amount' => 'numeric|min:0'
         ], [
             'code.unique' => 'เลขกำกับใบสั่งขายซ้ำ',
             'price.min' => 'ราคาต่อหน่วยต้องเป็น 1 ขึ้นไป',
