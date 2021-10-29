@@ -57,7 +57,7 @@ class ItemController extends Controller
             'price' => 'numeric|min:1',
             'min_amount' => 'numeric|min:1'
         ], [
-            'unique' => 'เลขกำกับใบสั่งขายซ้ำ',
+            'code.unique' => 'เลขกำกับใบสั่งขายซ้ำ',
             'price.min' => 'ราคาต่อหน่วยต้องเป็น 1 ขึ้นไป',
             'min_amount.min' => 'จำนวนคงเหลือขั้นต่ำต้องเป็น 1 ขึ้นไป'
         ]);
@@ -65,7 +65,7 @@ class ItemController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'failed',
-                'error' => $validator->errors()->first()
+                'error' => $validator->errors()
             ]);
         } else {
             $item = new Item();
@@ -138,13 +138,13 @@ class ItemController extends Controller
         $validator = Validator::make(["subAmount" => $subAmount], [
             'subAmount' => 'numeric|min:1|max:' . $item->amount,
         ], [
-            'min' => 'จำนวนที่ซื้อต้องเป็น 1 ขึ้นไป',
-            'max' => 'จำนวนที่ซื้อต้องไม่เกินจำนวนสินค้าที่มีอยู่',
+            'subAmount.min' => 'จำนวนที่ซื้อต้องเป็น 1 ขึ้นไป',
+            'subAmount.max' => 'จำนวนที่ซื้อต้องไม่เกินจำนวนสินค้าที่มีอยู่',
         ]);
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'failed',
-                'error' => $validator->errors()->first()
+                'error' => $validator->errors()
             ]);
         }
         $item->amount -= $subAmount;

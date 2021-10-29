@@ -42,7 +42,7 @@ class PoController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'failed',
-                'error' => $validator->errors()->first()
+                'error' => $validator->errors()
             ]);
         } else {
             $po = new Po();
@@ -65,9 +65,12 @@ class PoController extends Controller
                 } else {
                     $resPo = Po::where('code', $request->code)->with('poLines')->first();
                     $resPo->delete();
+                    $toRes = $validator->errors()->add("quantity", __("จำนวนสินค้าที่สั่งและราคาต่อหน่วยต้องเป็น 1 ขึ้นไป"));
+
+
                     return response()->json([
                         "status" => "failed",
-                        "error" =>  "จำนวนสินค้าที่สั่งและราคาต่อหน่วยต้องเป็น 1 ขึ้นไป",
+                        "error" =>  $toRes
                     ]);
                 }
             }

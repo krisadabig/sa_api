@@ -46,7 +46,7 @@ class SaleOrderController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'failed',
-                'error' => $validator->errors()->first()
+                'error' => $validator->errors()
             ]);
         } else {
             $sOrder = new SaleOrder();
