@@ -19,7 +19,7 @@ class ItemSeeder extends Seeder
         for ($i = 0; $i < 15; $i++) {
             $item = Item::create([
                 'code' => $faker->regexify('[A-Z]{3} [0-9]{3}'),
-                'price' => $faker->randomFloat($nbMaxDecimals = NULL, $min = 500, $max = 10000),
+                'price' => $faker->randomFloat($nbMaxDecimals = NULL, $min = 500, $max = 2000),
                 'amount' => $faker->numberBetween($min = 30, $max = 100),
                 'min_amount' => $faker->numberBetween($min = 5, $max = 20)
             ]);

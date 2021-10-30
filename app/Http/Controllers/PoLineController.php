@@ -14,7 +14,7 @@ class PoLineController extends Controller
      */
     public function index()
     {
-        $poLine = PoLine::with('item')->get();
+        $poLine = PoLine::with('item', 'po')->get();
         return response($poLine);
     }
 

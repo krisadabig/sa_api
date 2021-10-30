@@ -28,22 +28,40 @@ class SaleOrderSeeder extends Seeder
         for ($i = 0; $i < 15; $i++) {
             # code...
             $customer = $faker->randomElement(Customer::all());
+            $code = $faker->regexify('S[0-9]{7}');
             SaleOrder::create([
-                'code' => $faker->regexify('P[0-9]{7}'),
+                'code' => $code,
                 'customer_id' => $customer->id,
                 'status' => $faker->randomElement(["WaitPay", "Complete"]),
                 'total_price' => 0
             ]);
 
-            $po_code = $faker->randomElement(Po::all());
+            $color = $faker->randomElement(Item::all());
+            $so = SaleOrder::where('code', $code)->first();
+
+            if ($so->status === "Complete") {
+                $so->complete_date = $so->created_at;
+                $so->save();
+            }
+
+            $soLine = new SaleOrderLine();
+            $soLine->sale_order_code = $so->code;
+            $soLine->color_code = $color->code;
+            $soLine->quantity = $faker->regexify('[1-9][0-9]{0,1}');
+            $soLine->save();
+            $so->total_price += $soLine->quantity * $color->price;
+            $so->save();
+
             $color = $faker->randomElement(Item::all());
 
-            $poLine = new PoLine();
-            $poLine->po_code = $po_code->code;
-            $poLine->color_code = $color->code;
-            $poLine->quantity = $faker->regexify('[1-9][0-9]{1,2}');
-            $poLine->price_per_unit = $faker->regexify('[1-9][0-9]{2}');
-            $poLine->save();
+            $soLine = new SaleOrderLine();
+            $soLine->sale_order_code = $so->code;
+            $soLine->color_code = $color->code;
+            $soLine->quantity = $faker->regexify('[1-9][0-9]{0,1}');
+            $soLine->save();
+
+            $so->total_price += $soLine->quantity * $color->price;
+            $so->save();
         }
         $so = new SaleOrder();
         $so->code = "S1";

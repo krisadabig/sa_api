@@ -24,15 +24,16 @@ class POSeeder extends Seeder
         for ($i = 0; $i < 15; $i++) {
             # code...
             $supplier = $faker->randomElement(Supplier::all());
+            $code = $faker->regexify('P[0-9]{7}');
             $po = Po::create([
-                'code' => $faker->regexify('P[0-9]{7}'),
+                'code' => $code,
                 'supplier_id' => $supplier->id,
                 'status' => $faker->randomElement(["Wait", "WaitPay", "Complete"]),
                 'total_price' => 0
             ]);
 
             $color = $faker->randomElement(Item::all());
-            $po = Po::all()->sortBy('code')->last();
+            $po = Po::where('code', $code)->first();
 
             $poLine = new PoLine();
             $poLine->po_code = $po->code;
@@ -40,12 +41,17 @@ class POSeeder extends Seeder
             $poLine->quantity = $faker->regexify('[1-9][0-9]{1,2}');
             $poLine->price_per_unit = $faker->regexify('[1-9][0-9]{2}');
             $poLine->save();
+            if ($po->status === "Wait") {
+                $color->no_po_line += 1;
+                $color->save();
+            }
+            $po->total_price = $poLine->price_per_unit * $poLine->quantity;
+            $po->save();
 
-            $po_2 = $faker->randomElement(Po::all());
             $color = $faker->randomElement(Item::all());
 
             $poLine = new PoLine();
-            $poLine->po_code = $po_2->code;
+            $poLine->po_code = $po->code;
             $poLine->color_code = $color->code;
             $poLine->quantity = $faker->regexify('[1-9][0-9]{1,2}');
             $poLine->price_per_unit = $faker->regexify('[1-9][0-9]{2}');
