@@ -55,11 +55,11 @@ class ItemController extends Controller
         $validator = Validator::make($request->all(), [
             'code' => 'unique:items',
             'price' => 'numeric|min:1',
-            'min_amount' => 'numeric|min:1'
+            'min_amount' => 'numeric|min:0'
         ], [
             'code.unique' => 'เลขกำกับใบสั่งขายซ้ำ',
             'price.min' => 'ราคาต่อหน่วยต้องเป็น 1 ขึ้นไป',
-            'min_amount.min' => 'จำนวนคงเหลือขั้นต่ำต้องเป็น 1 ขึ้นไป'
+            'min_amount.min' => 'จำนวนคงเหลือขั้นต่ำต้องเป็น 0 ขึ้นไป'
         ]);
 
         if ($validator->fails()) {
@@ -105,17 +105,17 @@ class ItemController extends Controller
         $validator = Validator::make($request->all(), [
             'code' => Rule::unique('items')->ignore($code, 'code'),
             'price' => 'numeric|min:1',
-            'min_amount' => 'numeric|min:1'
+            'min_amount' => 'numeric|min:0'
         ], [
             'unique' => 'เลขกำกับใบสั่งขายซ้ำ',
             'price.min' => 'ราคาต่อหน่วยต้องเป็น 1 ขึ้นไป',
-            'min_amount.min' => 'จำนวนคงเหลือขั้นต่ำต้องเป็น 1 ขึ้นไป'
+            'min_amount.min' => 'จำนวนคงเหลือขั้นต่ำต้องเป็น 0 ขึ้นไป'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'failed',
-                'error' => $validator->errors()->first()
+                'error' => $validator->errors()
             ]);
         } else {
             $item = Item::where('code', $code)->first();
