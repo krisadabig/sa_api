@@ -15,15 +15,15 @@ class ItemSeeder extends Seeder
      */
     public function run()
     {
-//        $faker = Factory::create();
-//        for ($i = 0; $i < 5; $i++) {
-//            $item = Item::create([
-//                'name' => $faker->regexify('[A-Z]{2}[0-9]{3}'),
-//                'price' => $faker->randomFloat($nbMaxDecimals = NULL, $min = 500, $max = 10000),
-//                'quantity' => $faker->numberBetween($min = 30, $max = 100),
-//                'min_quantity' => $faker->numberBetween($min = 5, $max = 20)
-//            ]);
-//        }
+        $faker = Factory::create();
+        for ($i = 0; $i < 15; $i++) {
+            $item = Item::create([
+                'code' => $faker->regexify('[A-Z]{3} [0-9]{3}'),
+                'price' => $faker->randomFloat($nbMaxDecimals = NULL, $min = 500, $max = 10000),
+                'amount' => $faker->numberBetween($min = 30, $max = 100),
+                'min_amount' => $faker->numberBetween($min = 5, $max = 20)
+            ]);
+        }
         $item = new Item();
         $item->code = "OSP 900";
         $item->price = 1100.00;

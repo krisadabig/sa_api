@@ -18,6 +18,7 @@ class CreateItemsTable extends Migration
             $table->float('price');
             $table->bigInteger('amount');
             $table->bigInteger('min_amount');
+            $table->unsignedBigInteger('no_po_line')->default(0);
             // $table->timestamps();
         });
     }

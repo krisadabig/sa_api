@@ -74,6 +74,11 @@ class PoController extends Controller
                     ]);
                 }
             }
+            foreach ($request->po_lines as $value) {
+                $item = Item::where('code', $value['color_code']);
+                $item->no_po_line += 1;
+                $item->save();
+            }
             return response()->json([
                 "status" => "success",
                 "data" =>  $po
@@ -116,6 +121,7 @@ class PoController extends Controller
             # code...
             $item = Item::where('code', $value->color_code)->first();
             $item->amount += $value->quantity;
+            $item->no_po_line += 1;
             $item->save();
         }
         return response()->json([
